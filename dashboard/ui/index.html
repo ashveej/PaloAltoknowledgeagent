@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Palo Alto Networks · Technical Sales Knowledge Agent</title>
+<style>
+  :root{
+    --orange:#FA582D; --orange-d:#D8410F; --ink:#10121A; --bg:#F6F7F9; --card:#FFFFFF;
+    --line:#E8EAEF; --line2:#F0F2F5; --txt:#14171F; --mut:#6A7280; --mut2:#8A92A0;
+    --hi:#117A38; --hi-bg:#E8F5EC; --hi-br:#Bfe2C8;
+    --med:#9A6400; --med-bg:#FBF1DC; --med-br:#EAD6A6;
+    --lo:#C42C24; --lo-bg:#FCEAE8; --lo-br:#F1C6C2;
+    --sh:0 1px 2px rgba(16,18,26,.05), 0 6px 24px -8px rgba(16,18,26,.12);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--txt);
+    font:14.5px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  a{color:var(--orange-d);text-decoration:none} a:hover{text-decoration:underline}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+  header{background:var(--ink);color:#fff;position:sticky;top:0;z-index:30}
+  .hwrap{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:16px;height:58px;padding:0 22px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:-.3px}
+  .brand .logo{width:20px;height:20px;border-radius:6px;background:var(--orange);position:relative;flex:none}
+  .brand .logo::after{content:"";position:absolute;inset:5px 4px;border-left:3px solid #fff;border-right:3px solid #fff}
+  .vsep{width:1px;height:24px;background:rgba(255,255,255,.14)}
+  .htitle{color:#AEB4C0;font-size:12.5px;font-weight:600}
+  nav{margin-left:auto;display:flex;gap:2px}
+  nav button{background:none;border:0;color:#A6ADBA;padding:7px 13px;border-radius:8px;cursor:pointer;font:inherit;font-weight:600}
+  nav button:hover{color:#fff;background:rgba(255,255,255,.07)}
+  nav button.active{color:#fff;background:var(--orange)}
+
+  /* Notification bell */
+  .bell{position:relative;margin-left:auto}
+  .bell + nav{margin-left:0}
+  .bellbtn{position:relative;background:none;border:0;color:#A6ADBA;padding:7px 9px;border-radius:8px;cursor:pointer;display:flex;align-items:center;line-height:0}
+  .bellbtn:hover{color:#fff;background:rgba(255,255,255,.07)}
+  .bellbadge{position:absolute;top:1px;right:1px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;
+    background:var(--orange);color:#fff;font-size:10px;font-weight:700;line-height:16px;text-align:center;box-shadow:0 0 0 2px var(--ink)}
+  .bellpanel{position:absolute;top:calc(100% + 8px);right:0;width:360px;max-height:420px;overflow-y:auto;
+    background:#181B26;border:1px solid rgba(255,255,255,.10);border-radius:12px;
+    box-shadow:0 12px 34px -8px rgba(0,0,0,.55);z-index:40}
+  .bellhead{padding:12px 15px;font-weight:700;font-size:13px;color:#fff;border-bottom:1px solid rgba(255,255,255,.08)}
+  .belllist{padding:5px 0}
+  .bellitem{display:flex;gap:11px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;cursor:pointer;
+    padding:10px 15px;font:inherit;color:#CDD2DC}
+  .bellitem:hover{background:rgba(255,255,255,.06)}
+  .bellitem .bi{width:28px;height:28px;flex:none;border-radius:8px;background:rgba(250,88,45,.15);color:var(--orange);
+    display:flex;align-items:center;justify-content:center;font-size:14px}
+  .bellitem .bb{flex:1;min-width:0}
+  .bellitem .bto{font-weight:700;font-size:12.5px;color:#fff}
+  .bellitem .bsub{font-size:12px;color:#A6ADBA;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bellitem .btime{font-size:11px;color:#737B89;flex:none;margin-top:1px}
+  .bellempty{padding:28px 15px;text-align:center;color:#737B89;font-size:13px}
+
+  main{max-width:1080px;margin:30px auto 60px;padding:0 22px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh)}
+  .pad{padding:22px}
+  .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--mut2);font-weight:700;margin:0 0 10px}
+  .hidden{display:none}
+  .muted{color:var(--mut)}
+
+  /* Ask */
+  .ask h1{margin:0 0 4px;font-size:23px;letter-spacing:-.5px}
+  .ask p.sub{margin:0 0 18px;color:var(--mut)}
+  .field{display:flex;gap:10px;border:1.5px solid var(--line);border-radius:13px;padding:8px 8px 8px 16px;
+    background:#fff;transition:.15s;align-items:flex-end}
+  .field:focus-within{border-color:var(--orange);box-shadow:0 0 0 4px rgba(250,88,45,.12)}
+  .field textarea{flex:1;border:0;outline:0;resize:none;font:inherit;background:none;padding:6px 0;min-height:26px;max-height:160px}
+  .field .go{align-self:stretch;display:flex;gap:8px;align-items:flex-end}
+  select{font:inherit;color:var(--txt);background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:9px 11px}
+  select:focus{outline:0;border-color:var(--orange)}
+  .btn{background:var(--orange);color:#fff;border:0;border-radius:10px;padding:11px 20px;font:inherit;font-weight:700;cursor:pointer;white-space:nowrap}
+  .btn:hover{background:var(--orange-d)} .btn:disabled{opacity:.55;cursor:default}
+  /* 2-column ask layout: sample questions (left) · ask + answer (right) */
+  .asklayout{display:grid;grid-template-columns:290px 1fr;gap:20px;align-items:start}
+  @media(max-width:840px){.asklayout{grid-template-columns:1fr}}
+  .sidebar{position:sticky;top:74px;max-height:calc(100vh - 92px);overflow:auto}
+  @media(max-width:840px){.sidebar{position:static;max-height:none}}
+  .sgroup{margin-bottom:14px}
+  .slabel{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;color:var(--mut);margin:0 0 7px}
+  .qitem{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;
+    padding:9px 12px;margin-bottom:6px;cursor:pointer;font-size:12.5px;color:#3A404B;line-height:1.45;transition:.12s}
+  .qitem:hover{border-color:var(--orange);box-shadow:0 0 0 3px rgba(250,88,45,.08);color:var(--txt)}
+  .dot{width:8px;height:8px;border-radius:50%;flex:none}
+  .dot.High{background:var(--hi)} .dot.Medium{background:var(--med)} .dot.Escalation{background:var(--lo)}
+
+  /* Answer */
+  #answer{margin-top:22px}
+  .ans{overflow:hidden}
+  .ans .strip{display:flex;align-items:center;gap:14px;padding:16px 22px;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font-weight:700;font-size:13.5px;border:1px solid transparent}
+  .pill.High{color:var(--hi);background:var(--hi-bg);border-color:var(--hi-br)}
+  .pill.Medium{color:var(--med);background:var(--med-bg);border-color:var(--med-br)}
+  .pill.Low{color:var(--lo);background:var(--lo-bg);border-color:var(--lo-br)}
+  .pill .dot{width:9px;height:9px}
+  .stats{margin-left:auto;display:flex;gap:8px}
+  .stat{text-align:center;background:var(--line2);border-radius:10px;padding:6px 12px;min-width:62px}
+  .stat b{display:block;font-size:16px;line-height:1.1}.stat span{font-size:10.5px;color:var(--mut)}
+  .prose{padding:20px 22px;font-size:15.5px;line-height:1.72;white-space:pre-wrap}
+  .prose .lbl{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--mut);margin:16px 0 2px;font-weight:700}
+  .why{margin:0 22px 18px;font-size:13px;color:#3C424E;background:#FBFBFC;border:1px solid var(--line);border-left:3px solid var(--orange);border-radius:0 10px 10px 0;padding:11px 14px}
+
+  /* Evidence — embedded source + chunk */
+  .ev-head{padding:4px 22px 0;display:flex;align-items:center;gap:8px}
+  .ev-head .eyebrow{margin:0}
+  .evlist{padding:10px 22px 6px;display:flex;flex-direction:column;gap:12px}
+  .ev{display:flex;gap:13px;border:1px solid var(--line);border-radius:13px;padding:14px;background:#fff;border-left:3px solid var(--orange)}
+  .ev .num{width:24px;height:24px;border-radius:7px;background:var(--orange);color:#fff;font-weight:700;font-size:12.5px;display:flex;align-items:center;justify-content:center;flex:none}
+  .ev .b{flex:1;min-width:0}
+  .ev .t{font-weight:650;color:var(--txt)}
+  .ev .t a.ext:after{content:" ↗";color:var(--mut2);font-size:12px}
+  .ev .t a.kbsrc{display:inline-flex;align-items:center;gap:8px}
+  .kbtag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--orange-d);
+    background:var(--lo-bg);border:1px solid #F1C6C2;border-radius:6px;padding:2px 7px}
+  tr.hl{background:rgba(250,88,45,.10);box-shadow:inset 3px 0 0 var(--orange);transition:background .4s}
+  .ev .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:5px 0 9px;font-size:12px;color:var(--mut)}
+  .tag{font-size:11px;padding:2px 8px;border-radius:6px;background:var(--line2);color:#4A515E;font-weight:600}
+  .tag.prod{background:#FFE7DE;color:#B23A18}
+  .tag.fr{font-weight:700}
+  .tag.Fresh{background:var(--hi-bg);color:var(--hi)} .tag.Aging{background:var(--med-bg);color:var(--med)} .tag.Stale{background:var(--lo-bg);color:var(--lo)}
+  .quote{font-size:13.5px;line-height:1.6;color:#262B34;background:#FAFAFB;border:1px solid var(--line2);border-radius:9px;padding:11px 13px;white-space:pre-wrap}
+  .ev .cid{margin-top:7px;font-size:11px;color:var(--mut2)}
+
+  /* score breakdown panel (always visible) */
+  .bpanel{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin:4px 22px 18px;padding:16px;
+    background:#FBFBFC;border:1px solid var(--line);border-radius:12px}
+  @media(max-width:680px){.bpanel{grid-template-columns:1fr}.stats{margin-left:0;width:100%}}
+  .capnote{font-weight:600;text-transform:none;letter-spacing:0;color:var(--med);background:var(--med-bg);
+    border:1px solid var(--med-br);border-radius:6px;padding:1px 7px;margin-left:6px;font-size:10.5px}
+  .braw{margin-top:11px;padding-top:9px;border-top:1px dashed var(--line);font-size:12px;color:var(--mut)}
+  .braw b{color:var(--txt)}
+  .trow{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);margin-top:9px}
+  .meter{height:6px;border-radius:6px;background:#EDEFF3;overflow:hidden;margin-top:4px}
+  .meter>i{display:block;height:100%;background:var(--orange)}
+  .bvchips{display:flex;flex-wrap:wrap;gap:6px}
+  .bvchip{font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--line)}
+  .bvchip.ok{color:var(--hi);background:var(--hi-bg);border-color:var(--hi-br)}
+  .bvchip.no{color:var(--lo);background:var(--lo-bg);border-color:var(--lo-br)}
+
+  .fb{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:14px 22px 20px;border-top:1px solid var(--line2)}
+  .fb button{background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 12px;cursor:pointer;font:inherit;color:var(--txt)}
+  .fb button:hover{border-color:var(--orange)} .fbmsg{color:var(--hi);font-size:13px;font-weight:600}
+  .esc{display:flex;gap:13px;align-items:flex-start;padding:20px 22px}
+  .esc .ic{width:34px;height:34px;border-radius:10px;background:var(--lo-bg);color:var(--lo);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+  .spinner{width:15px;height:15px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;display:inline-block;animation:sp .7s linear infinite;vertical-align:-2px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  /* tables / KB / dash */
+  .kpis{display:flex;gap:13px;flex-wrap:wrap}
+  .kpi{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:16px;box-shadow:var(--sh)}
+  .kpi b{font-size:25px;display:block;line-height:1}.kpi span{color:var(--mut);font-size:12px}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--line2);font-size:13px;vertical-align:top}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);background:#FAFBFC}
+  tr:last-child td{border-bottom:0}
+  .notif{font-size:12.5px;color:var(--hi);background:var(--hi-bg);border:1px solid var(--hi-br);border-radius:8px;padding:6px 10px}
+  details.mail{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff}
+  details.mail>summary{cursor:pointer;list-style:none;display:flex;gap:10px;align-items:baseline;padding:10px 12px}
+  details.mail>summary::-webkit-details-marker{display:none}
+  details.mail>summary:before{content:"✉";color:var(--orange);margin-right:2px}
+  .mailto{font-weight:700;font-size:12.5px;white-space:nowrap}
+  .mailsub{color:var(--mut);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mailbody{margin:0;border-top:1px solid var(--line2);padding:12px 14px;font-size:12.5px;line-height:1.55;white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;color:#333842}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+  .filters button{background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 13px;cursor:pointer;font:inherit;font-weight:600;color:var(--mut)}
+  .filters button.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .empty{padding:32px;text-align:center;color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="brand"><span class="logo"></span>paloalto</div>
+    <div class="vsep"></div>
+    <div class="htitle">Technical Sales · Knowledge Agent</div>
+    <div class="bell" id="bellWrap">
+      <button class="bellbtn" id="bellBtn" aria-label="Notifications" title="Notifications">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.7 21a2 2 0 0 1-3.4 0"/>
+        </svg>
+        <span class="bellbadge hidden" id="bellBadge">0</span>
+      </button>
+      <div class="bellpanel hidden" id="bellPanel">
+        <div class="bellhead">Notifications</div>
+        <div class="belllist" id="bellList"></div>
+      </div>
+    </div>
+    <nav>
+      <button data-tab="ask" class="active">Ask</button>
+      <button data-tab="kb">Knowledge Base</button>
+      <button data-tab="sme">SME Queue</button>
+      <button data-tab="dash">Dashboard</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section id="ask">
+    <div class="asklayout">
+      <aside class="card pad sidebar">
+        <p class="eyebrow">Sample questions</p>
+        <div id="samples"></div>
+      </aside>
+      <div class="askmain">
+        <div class="card pad ask">
+          <h1>Ask a product question</h1>
+          <p class="sub">Grounded only in approved sources — every answer shows the exact evidence and a deterministic confidence score.</p>
+          <div class="field">
+            <textarea id="q" rows="1" placeholder="e.g. What is the supported PAN-OS upgrade path to 11.1, and can I skip versions?"></textarea>
+            <div class="go">
+              <select id="product">
+                <option value="">Auto-detect</option>
+                <option>Prisma Access</option><option>Cortex XDR</option><option>NGFW</option>
+              </select>
+              <button class="btn" id="askBtn" onclick="askQ()">Ask</button>
+            </div>
+          </div>
+        </div>
+        <div id="answer"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="kb" class="hidden">
+    <div class="kpis" id="kbKpis"></div>
+    <div class="card pad" style="margin-top:14px">
+      <p class="eyebrow">Knowledge base — sources the agent can cite</p>
+      <div class="filters" id="kbFilters"></div>
+      <div id="kbTable"></div>
+    </div>
+  </section>
+
+  <section id="sme" class="hidden">
+    <div class="card pad" style="margin-bottom:14px">
+      <p class="eyebrow">SME routing — where a knowledge gap goes</p>
+      <p class="muted" style="margin-top:-2px">Escalations route by detected product + feature. A specific feature wins; otherwise the product's catch-all group applies.</p>
+      <div id="routing"></div>
+    </div>
+    <div class="card pad">
+      <p class="eyebrow">Open SME escalations</p>
+      <p class="muted" style="margin-top:-2px">Each escalation emails the assigned SME group. Answer + Approve publishes it back into the knowledge base as a citable source.</p>
+      <div id="escList"></div>
+    </div>
+    <div class="card pad" style="margin-top:14px">
+      <p class="eyebrow">Notifications outbox — emails sent to SME groups</p>
+      <p class="muted" style="margin-top:-2px">Offline mode writes <span class="mono">data/outbox/*.eml</span>; set SMTP_* in <span class="mono">.env</span> to send for real.</p>
+      <div id="outbox"></div>
+    </div>
+  </section>
+
+  <section id="dash" class="hidden">
+    <div class="kpis" id="dashKpis"></div>
+    <div class="card pad" style="margin-top:14px">
+      <p class="eyebrow">Confidence distribution</p>
+      <div id="dashConf"></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function activateTab(name){
+  const b=document.querySelector(`nav button[data-tab="${name}"]`); if(!b)return;
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  ['ask','kb','sme','dash'].forEach(t=>$('#'+t).classList.toggle('hidden',t!==name));
+  if(location.hash!=='#'+name) history.replaceState(null,'','#'+name);
+  if(name==='kb')loadKB(); if(name==='sme')loadEsc(); if(name==='dash')loadMetrics();
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>activateTab(b.dataset.tab));
+
+/* auto-grow textarea */
+const qa=$('#q');
+qa.addEventListener('input',()=>{qa.style.height='auto';qa.style.height=Math.min(qa.scrollHeight,160)+'px';});
+qa.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter')askQ();});
+
+async function loadSamples(){
+  const list=await(await fetch('/sample-questions')).json();
+  window._samples=list;
+  const groups=[['High','High confidence'],['Medium','Medium confidence'],['Escalation','Likely routed to SME']];
+  $('#samples').innerHTML=groups.map(([tier,label])=>{
+    const items=list.map((s,i)=>({s,i})).filter(o=>o.s.tier===tier);
+    if(!items.length)return '';
+    return `<div class="sgroup"><div class="slabel"><span class="dot ${tier}"></span>${label} · ${items.length}</div>
+      ${items.map(o=>`<div class="qitem" onclick="runSample(${o.i})">${esc(o.s.q)}</div>`).join('')}</div>`;
+  }).join('');
+}
+function runSample(i){const s=window._samples[i];$('#q').value=s.q;
+  $('#product').value=['Prisma Access','Cortex XDR','NGFW'].includes(s.product)?s.product:'';
+  askQ();window.scrollTo({top:0,behavior:'smooth'});}
+
+async function askQ(){
+  const question=$('#q').value.trim(); if(!question)return;
+  const btn=$('#askBtn'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
+  $('#answer').innerHTML='<div class="card pad muted">Retrieving approved evidence and scoring confidence…</div>';
+  try{
+    const d=await(await fetch('/agent/ask',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({question,product:$('#product').value||null})})).json();
+    renderAnswer(d);
+  }catch(e){$('#answer').innerHTML='<div class="card pad pill Low">Request failed.</div>';}
+  btn.disabled=false; btn.textContent='Ask';
+}
+
+function fmtBody(answer){
+  let body=answer.split('\nConfidence:')[0].replace(/^Answer:\s*/,'').trim();
+  return esc(body).replace(/Important caveats:/g,'<span class="lbl">Important caveats</span>');
+}
+
+// External docs open in a new tab; internal sources (e.g. SME-approved answers,
+// url internal://…) open the Knowledge Base and highlight that source.
+function srcLink(x){
+  const ext=/^https?:/i.test(x.url||'');
+  if(ext) return `<a class="ext" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a>`;
+  const sid=esc((x.chunk_id||'').split('#')[0]);
+  return `<a class="kbsrc" href="#kb" onclick="event.preventDefault();openSourceInKB('${sid}')">${esc(x.title)}<span class="kbtag">View in Knowledge Base</span></a>`;
+}
+function openSourceInKB(sid){ window._kbHighlight=sid; _kbFilter='All'; activateTab('kb'); }
+
+function renderAnswer(d){
+  if(d.escalated_to_sme){
+    $('#answer').innerHTML=`<div class="card ans"><div class="esc">
+      <div class="ic">⤴</div>
+      <div><b>Routed to a Subject-Matter Expert</b>
+        <div class="muted" style="margin-top:3px">${esc(d.answer)}</div>
+        <div class="why" style="margin:10px 0 0">${esc(d.why_confidence)}</div></div></div>
+      <div class="fb"><span class="muted">Was this the right call?</span>
+        <button onclick="fb('${d.answer_id}','helpful',this)">👍 Yes</button>
+        <button onclick="fb('${d.answer_id}','answer_is_wrong',this)">No, it's answerable</button>
+        <span class="fbmsg" id="fbmsg"></span></div></div>`;
+    return;
+  }
+  const c=d.confidence;
+  const ev=(d.citations||[]).map((x,i)=>`
+    <article class="ev">
+      <div class="num">${i+1}</div>
+      <div class="b">
+        <div class="t">${srcLink(x)}</div>
+        <div class="meta">
+          ${x.product?`<span class="tag prod">${esc(x.product)}</span>`:''}
+          ${x.source_type?`<span class="tag">${esc(x.source_type.replace(/_/g,' '))}</span>`:''}
+          ${x.freshness?`<span class="tag fr ${esc(x.freshness)}">${esc(x.freshness)}</span>`:''}
+          ${x.section_title?`<span>· ${esc(x.section_title)}</span>`:''}
+        </div>
+        <div class="quote">${esc(x.text||'')}</div>
+        <div class="cid mono">${esc(x.chunk_id)}</div>
+      </div>
+    </article>`).join('');
+  const bd=d.score_breakdown||{};
+  const trust=[['Citation integrity',bd.citation_integrity,40],['Retrieval relevance',bd.retrieval_relevance,25],
+    ['Source authority',bd.source_authority,20],['Source freshness',bd.source_freshness,15]]
+    .map(([l,v,m])=>`<div><div class="trow"><span>${l}</span><span>${v??0}/${m}</span></div>
+      <div class="meter"><i style="width:${Math.round(100*(v||0)/m)}%"></i></div></div>`).join('');
+  const bv=(d.experience_breakdown||[]).map(b=>
+    `<span class="bvchip ${b.passed?'ok':'no'}">${b.passed?'✓':'✗'} ${esc(b.label)} ${b.awarded}/${b.points}</span>`).join('');
+
+  $('#answer').innerHTML=`<div class="card ans">
+    <div class="strip">
+      <span class="pill ${c}"><span class="dot ${c==='High'?'High':c==='Medium'?'Medium':'Escalation'}"></span>${c} confidence</span>
+      <div class="stats">
+        <div class="stat"><b>${d.technical_trust_score}</b><span>Trust</span></div>
+        <div class="stat"><b>${d.experience_quality_score}</b><span>Voice</span></div>
+        <div class="stat"><b>${d.final_response_quality_score}</b><span>Overall</span></div>
+      </div>
+    </div>
+    <div class="prose">${fmtBody(d.answer)}</div>
+    <div class="why"><b>Why this confidence:</b> ${esc(d.why_confidence)}</div>
+    <div class="bpanel">
+      <div class="bcol">
+        <p class="eyebrow">Technical trust · ${d.technical_trust_score}/100${(bd.caps_applied&&bd.caps_applied.length)?` <span class="capnote">cap: ${esc(bd.caps_applied.join('; '))}</span>`:''}</p>
+        ${trust}
+        <div class="braw">Raw total <b>${bd.raw_total??d.technical_trust_score}/100</b></div>
+      </div>
+      <div class="bcol">
+        <p class="eyebrow">Brand voice · ${d.experience_quality_score}/100</p>
+        <div class="bvchips">${bv}</div>
+      </div>
+    </div>
+    <div class="ev-head"><p class="eyebrow">Evidence · ${(d.citations||[]).length} source${(d.citations||[]).length===1?'':'s'} (exact text the agent used)</p></div>
+    <div class="evlist">${ev}</div>
+    <div class="fb"><span class="muted">Feedback:</span>
+      <button onclick="fb('${d.answer_id}','helpful',this)">👍 Helpful</button>
+      <button onclick="fb('${d.answer_id}','answer_is_wrong',this)">This answer is wrong</button>
+      <button onclick="fb('${d.answer_id}','source_outdated',this)">Source is outdated</button>
+      <span class="fbmsg" id="fbmsg"></span></div></div>`;
+}
+
+async function fb(id,type){
+  await fetch('/agent/feedback',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({answer_id:id,feedback_type:type})});
+  $('#fbmsg').textContent='Thanks — recorded'+(type!=='helpful'?' and routed to SME.':'.');
+}
+
+let _kb=[],_kbFilter='All';
+async function loadKB(){
+  const d=await(await fetch('/sources')).json(); _kb=d.sources;
+  $('#kbKpis').innerHTML=`
+    <div class="kpi"><b>${d.total_sources}</b><span>approved sources</span></div>
+    <div class="kpi"><b>${d.total_chunks}</b><span>indexed chunks</span></div>
+    <div class="kpi"><b>${new Set(_kb.map(s=>s.product)).size}</b><span>products</span></div>
+    <div class="kpi"><b>${_kb.filter(s=>s.freshness!=='Fresh').length}</b><span>sources need review</span></div>`;
+  const prods=['All',...Array.from(new Set(_kb.map(s=>s.product))).sort()];
+  $('#kbFilters').innerHTML=prods.map(p=>`<button class="${p===_kbFilter?'active':''}" onclick="_kbFilter='${p}';loadKB()">${esc(p)}</button>`).join('');
+  const rows=_kb.filter(s=>_kbFilter==='All'||s.product===_kbFilter);
+  $('#kbTable').innerHTML=rows.length?`<table><thead><tr>
+    <th>Source</th><th>Product</th><th>Type</th><th>Ver</th><th>Reviewed</th><th>Freshness</th><th>Votes</th><th>Chunks</th></tr></thead><tbody>${
+    rows.map(s=>`<tr id="src-${esc(s.source_id)}">
+      <td>${/^https?:/i.test(s.url||'')?`<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>`:`${esc(s.title)} <span class="tag">SME / internal</span>`}<div class="cid mono" style="color:var(--mut2)">${esc(s.source_id)}</div></td>
+      <td><span class="tag prod">${esc(s.product||'—')}</span></td>
+      <td><span class="tag">${esc(s.source_type.replace(/_/g,' '))}</span></td>
+      <td>${esc(s.version||'—')}</td>
+      <td>${esc(s.last_reviewed_date||'—')} <span class="mono" style="color:var(--mut2)">(${s.days_since_review}d)</span></td>
+      <td><span class="tag fr ${s.freshness}">${s.freshness}</span></td>
+      <td>👍 ${s.upvotes} · 👎 ${s.downvotes}</td><td>${s.chunks}</td></tr>`).join('')}</tbody></table>`
+    :'<div class="empty">No sources.</div>';
+  if(window._kbHighlight){
+    const el=document.getElementById('src-'+window._kbHighlight);
+    if(el){el.classList.add('hl');el.scrollIntoView({behavior:'smooth',block:'center'});}
+    window._kbHighlight=null;
+  }
+}
+
+async function loadRouting(){
+  const d=await(await fetch('/sme/routing')).json();
+  $('#routing').innerHTML=`<table><thead><tr><th>Product</th><th>Feature</th><th>SME group</th></tr></thead><tbody>${
+    d.rules.map(r=>`<tr><td><span class="tag prod">${esc(r.product)}</span></td>
+      <td>${esc(r.feature)}</td><td><b>${esc(r.sme_group)}</b></td></tr>`).join('')}
+    <tr><td colspan="2" class="muted">No product detected (pricing, sizing, off-topic)</td><td><b>${esc(d.default)}</b></td></tr>
+    </tbody></table>`;
+}
+async function loadEsc(){
+  loadRouting(); loadOutbox();
+  const list=await(await fetch('/sme/escalations?status=open')).json();
+  $('#escList').innerHTML=list.length?list.map(e=>{
+    const n=e.notification||{};
+    const notif=n.to?`<div class="notif">📧 Emailed <b>${esc(n.to)}</b> · ${esc(n.transport||'')}</div>`:'';
+    return `<div class="card pad" style="margin-bottom:12px;box-shadow:none">
+      <b>${esc(e.question)}</b>
+      <div class="muted" style="margin:4px 0 8px">${esc(e.product||'?')} · ${esc(e.assigned_sme_group)} · reason: ${esc(e.failed_reason)} · score ${e.confidence_score}</div>
+      ${notif}
+      <div class="field" style="padding:8px 12px;margin-top:10px"><textarea id="ans-${e.escalation_id}" rows="2" placeholder="SME approved answer…"></textarea></div>
+      <div style="margin-top:10px"><button class="btn" onclick="publish('${e.escalation_id}','${esc(e.product||'')}','${esc(e.feature||'')}')">Approve &amp; Publish</button></div>
+    </div>`;}).join(''):'<div class="empty">No open escalations. 🎉</div>';
+}
+async function loadOutbox(){
+  const list=await(await fetch('/sme/outbox')).json();
+  $('#outbox').innerHTML=list.length?list.map(m=>`
+    <details class="mail">
+      <summary><span class="mailto">${esc(m.to)}</span><span class="mailsub">${esc(m.subject)}</span></summary>
+      <pre class="mailbody">${esc(m.body)}</pre>
+    </details>`).join(''):'<div class="empty">No notifications sent yet.</div>';
+}
+async function publish(id,product,feature){
+  const a=$('#ans-'+id).value.trim(); if(!a)return;
+  await fetch('/sme/answer',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({escalation_id:id,approved_answer:a,product,feature})});
+  loadEsc();
+}
+
+async function loadMetrics(){
+  const m=await(await fetch('/metrics')).json(); const cd=m.confidence_distribution||{};
+  $('#dashKpis').innerHTML=`
+    <div class="kpi"><b>${m.total_answers}</b><span>answers</span></div>
+    <div class="kpi"><b>${m.answers_with_citations_pct}%</b><span>with citations</span></div>
+    <div class="kpi"><b>${m.escalations_open}</b><span>open escalations</span></div>
+    <div class="kpi"><b>${m.helpful}</b><span>helpful votes</span></div>
+    <div class="kpi"><b>${m.wrong_answer}</b><span>wrong-answer reports</span></div>`;
+  const tot=(cd.High||0)+(cd.Medium||0)+(cd.Low||0)||1;
+  $('#dashConf').innerHTML=['High','Medium','Low'].map(k=>{const v=cd[k]||0;
+    const col=k==='High'?'hi':k==='Medium'?'med':'lo';
+    return `<div style="margin:9px 0"><div class="trow"><span style="color:var(--${col})">${k}</span><span>${v}</span></div>
+      <div class="meter"><i style="width:${Math.round(100*v/tot)}%;background:var(--${col})"></i></div></div>`;}).join('');
+}
+
+/* Notification bell */
+function relTime(iso){
+  const t=Date.parse(iso); if(isNaN(t))return '';
+  const s=Math.max(0,(Date.now()-t)/1000);
+  if(s<60)return 'just now';
+  if(s<3600)return Math.floor(s/60)+'m ago';
+  if(s<86400)return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+async function loadBellCount(){
+  try{
+    const list=await(await fetch('/sme/escalations?status=open')).json();
+    const n=Array.isArray(list)?list.length:0;
+    const b=$('#bellBadge'); b.textContent=n>99?'99+':n; b.classList.toggle('hidden',n===0);
+  }catch(e){}
+}
+async function loadBellList(){
+  const el=$('#bellList');
+  try{
+    const list=(await(await fetch('/sme/outbox')).json()).slice(0,10);
+    el.innerHTML=list.length?list.map(m=>`
+      <button class="bellitem" onclick="closeBell();activateTab('sme')">
+        <span class="bi">✉</span>
+        <span class="bb"><span class="bto">${esc(m.to||'')}</span>
+          <span class="bsub">${esc(m.subject||'')}</span></span>
+        <span class="btime">${esc(relTime(m.sent_at))}</span>
+      </button>`).join(''):'<div class="bellempty">You’re all caught up</div>';
+  }catch(e){el.innerHTML='<div class="bellempty">Could not load notifications</div>';}
+}
+function bellOpen(){return !$('#bellPanel').classList.contains('hidden');}
+function closeBell(){$('#bellPanel').classList.add('hidden');}
+function toggleBell(){
+  const p=$('#bellPanel');
+  if(p.classList.contains('hidden')){p.classList.remove('hidden');loadBellList();}
+  else p.classList.add('hidden');
+}
+$('#bellBtn').addEventListener('click',e=>{e.stopPropagation();toggleBell();});
+document.addEventListener('click',e=>{if(bellOpen()&&!$('#bellWrap').contains(e.target))closeBell();});
+loadBellCount();
+setInterval(()=>{loadBellCount();if(bellOpen())loadBellList();},20000);
+
+loadSamples();
+const _t=(location.hash||'#ask').slice(1);
+if(['kb','sme','dash'].includes(_t))activateTab(_t);
+const _p=new URLSearchParams(location.search);
+if(_p.get('q')){$('#q').value=_p.get('q');if(_p.get('product'))$('#product').value=_p.get('product');askQ();}
+</script>
+</body>
+</html>

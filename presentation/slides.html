@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Evidence-Governed Knowledge Agent — Panel Deck</title>
+<style>
+  :root{
+    --orange:#FA582D; --orange2:#FF7A4D; --ink:#0C0E14; --ink2:#141826;
+    --txt:#EAECEF; --mut:#9AA3B2; --line:#262C3A;
+    --hi:#41D67E; --med:#F4B740; --lo:#FF6B5E;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--ink);color:var(--txt);
+    font:18px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .deck{height:100vh;overflow:hidden}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+    padding:6vh 8vw;animation:fade .35s ease}
+  .slide.on{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  h1{font-size:46px;line-height:1.12;letter-spacing:-1px;margin:0 0 12px}
+  h2{font-size:34px;letter-spacing:-.5px;margin:0 0 22px;display:flex;align-items:center;gap:14px}
+  h2:before{content:"";width:14px;height:30px;background:var(--orange);border-radius:4px;flex:none}
+  .eyebrow{color:var(--orange2);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:14px;margin-bottom:10px}
+  p{margin:0 0 12px} .mut{color:var(--mut)}
+  strong{color:#fff}
+  ul{margin:0;padding-left:0;list-style:none}
+  li{position:relative;padding:7px 0 7px 28px;margin:0}
+  li:before{content:"";position:absolute;left:2px;top:16px;width:8px;height:8px;border-radius:50%;background:var(--orange)}
+  li.plain:before{display:none}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+  .cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{background:var(--ink2);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .card h3{margin:0 0 8px;font-size:20px;color:#fff}
+  .card .n{font-size:34px;font-weight:800;color:var(--orange2);line-height:1}
+  table{width:100%;border-collapse:collapse;font-size:16.5px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--mut);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em}
+  td strong{color:var(--orange2)}
+  .pill{display:inline-block;padding:3px 11px;border-radius:999px;font-size:13px;font-weight:700}
+  .pill.hi{background:rgba(65,214,126,.16);color:var(--hi)}
+  .pill.me{background:rgba(244,183,64,.16);color:var(--med)}
+  .pill.lo{background:rgba(255,107,94,.16);color:var(--lo)}
+  .flow{display:flex;flex-direction:column;gap:9px;font-size:16px}
+  .step{display:flex;gap:14px;align-items:flex-start}
+  .step .k{flex:none;width:30px;height:30px;border-radius:9px;background:var(--orange);color:#fff;
+    font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+  .step.gate .k{background:#384357;color:var(--orange2);border:1px solid var(--orange)}
+  .step .d{padding-top:4px}
+  .tag{display:inline-block;background:#222838;border:1px solid var(--line);border-radius:7px;
+    padding:2px 9px;font-size:13px;color:var(--mut);margin:2px 4px 2px 0}
+  .big{font-size:26px;line-height:1.4}
+  .lead{font-size:21px;color:#D7DAE0;max-width:60ch}
+  code{background:#222838;border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:.9em}
+  .wall{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}
+  .wall .vs{writing-mode:vertical-rl;text-orientation:mixed;color:var(--orange2);font-weight:800;
+    letter-spacing:.2em;font-size:13px;border-left:2px dashed var(--orange);padding-left:10px;height:100%}
+  /* chrome */
+  .bar{position:fixed;left:0;top:0;height:3px;background:var(--orange);z-index:9;transition:width .25s}
+  .foot{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:center;
+    padding:12px 24px;font-size:12.5px;color:var(--mut);z-index:8}
+  .foot .brand{display:flex;align-items:center;gap:8px;font-weight:800;color:#fff;letter-spacing:-.3px}
+  .foot .logo{width:16px;height:16px;border-radius:5px;background:var(--orange);position:relative}
+  .foot .logo:after{content:"";position:absolute;inset:4px 3px;border-left:2px solid #fff;border-right:2px solid #fff}
+  .title-wrap{max-width:24ch}
+  .kicker{display:inline-block;background:rgba(250,88,45,.14);color:var(--orange2);border:1px solid var(--orange);
+    border-radius:999px;padding:5px 14px;font-size:13px;font-weight:700;margin-bottom:22px}
+  @media print{
+    .slide{display:flex!important;position:relative;height:100vh;page-break-after:always;inset:auto}
+    .bar,.foot .nav{display:none}
+    html,body,.deck{height:auto;overflow:visible}
+  }
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 TITLE -->
+  <section class="slide on">
+    <div class="kicker">Technical PM Panel · 60 min</div>
+    <h1 class="title-wrap">Evidence-Governed Knowledge Agent for Technical Sales</h1>
+    <p class="lead">An evidence-governed RAG platform — not a chatbot. Every answer is grounded in approved sources, cites the exact text, and carries a <strong>deterministically-calculated</strong> confidence score. Weak evidence routes to an SME, whose answer becomes reusable knowledge.</p>
+    <p class="mut" style="margin-top:26px">Live build: FastAPI · LanceDB · Claude (Opus 4.8 / Haiku 4.5) · deterministic scoring engine</p>
+  </section>
+
+  <!-- 2 AGENDA -->
+  <section class="slide">
+    <div class="eyebrow">Agenda</div>
+    <h2>How I'll use the 60 minutes</h2>
+    <table>
+      <tr><th>Section</th><th>Time</th><th>What I'll prove</th></tr>
+      <tr><td><strong>Introduction</strong></td><td>5</td><td>My Technical-PM operating system</td></tr>
+      <tr><td><strong>Context &amp; Problem</strong></td><td>5</td><td>The user pain; why a generic chatbot fails</td></tr>
+      <tr><td><strong>Technical Deep Dive</strong></td><td>15</td><td>Architecture, data pipeline, the trade-offs I'd defend</td></tr>
+      <tr><td><strong>Evaluation &amp; Results</strong></td><td>10</td><td>A KPI-tied eval framework + the hard truths</td></tr>
+      <tr><td><strong>Panel Q&amp;A</strong></td><td>25</td><td>Defend the trade-offs and the roadmap</td></tr>
+    </table>
+  </section>
+
+  <!-- 3 PHILOSOPHY -->
+  <section class="slide">
+    <div class="eyebrow">Introduction</div>
+    <h2>My Technical-PM operating system</h2>
+    <div class="cols3">
+      <div class="card"><div class="n">1</div><h3>Slice the risk</h3><p class="mut">Ship the thinnest vertical that retires the <strong>riskiest assumption</strong> first. Here it's <em>trust</em>, not "can an LLM answer" — so the first slice was the whole trust loop.</p></div>
+      <div class="card"><div class="n">2</div><h3>Determinism where trust lives</h3><p class="mut">The LLM classifies, drafts, and styles. It <strong>never</strong> decides confidence, citations, or whether to answer. Those are auditable Python.</p></div>
+      <div class="card"><div class="n">3</div><h3>Make trust legible</h3><p class="mut">"Medium" is useless. "Medium because the only source is 241 days old" changes how an SE uses it. Every score is explained; every claim shows its source.</p></div>
+    </div>
+  </section>
+
+  <!-- 4 PROBLEM -->
+  <section class="slide">
+    <div class="eyebrow">Context &amp; Problem</div>
+    <h2>The user, and the asymmetric cost of being wrong</h2>
+    <div class="cols">
+      <div>
+        <p class="big"><strong>Technical Sales / SEs</strong>, live in a customer call:</p>
+        <p class="lead">"Does Prisma Access support X in version Y?"</p>
+        <ul>
+          <li>Confident-but-wrong loses <strong>credibility</strong> and the deal</li>
+          <li>Truth is sprawled across guides, release notes, KB, Confluence — and goes stale</li>
+          <li>SMEs answer the same Qs in Slack; that knowledge never becomes reusable</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Why a generic chatbot makes it worse</h3>
+        <p class="mut">It hallucinates <strong>with confidence</strong> and leaves no audit trail. For a security vendor, an unsourced claim is a liability — not a feature.</p>
+        <p style="margin-top:14px">The task is an <strong>evidence-governed RAG system</strong> with a human-in-the-loop knowledge flywheel.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 PRINCIPLES -->
+  <section class="slide">
+    <div class="eyebrow">Product principles</div>
+    <h2>Four non-negotiables</h2>
+    <div class="cols">
+      <ul>
+        <li><strong>No citation → no answer.</strong> Every factual claim maps to approved source text, or it doesn't ship.</li>
+        <li><strong>Confidence is calculated, not generated.</strong> The LLM never sets it.</li>
+      </ul>
+      <ul>
+        <li><strong>Brand voice is a presentation layer.</strong> It can clarify; it can't add claims or drop caveats.</li>
+        <li><strong>SME answers become governed knowledge.</strong> Not a Slack reply — an owned, citable, review-dated asset.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6 ARCHITECTURE -->
+  <section class="slide">
+    <div class="eyebrow">Technical Deep Dive · Architecture</div>
+    <h2>End-to-end flow</h2>
+    <div class="flow">
+      <div class="step"><div class="k">1</div><div class="d"><strong>Classify</strong> product / feature / intent <span class="tag">Haiku — cheap, fast</span></div></div>
+      <div class="step"><div class="k">2</div><div class="d"><strong>Retrieve</strong> vector search → cross-encoder rerank → freshness/reputation boost → drop deprecated/unapproved/off-product <span class="tag">LanceDB + local models</span></div></div>
+      <div class="step"><div class="k">3</div><div class="d"><strong>Evidence Pack</strong> — only chunk text + ids handed to the model</div></div>
+      <div class="step"><div class="k">4</div><div class="d"><strong>Facts engine</strong> — claim-first answer, every claim cites a chunk <span class="tag">Opus</span></div></div>
+      <div class="step gate"><div class="k">▣</div><div class="d"><strong>Hard gates (Python)</strong> — cited? approved? not deprecated? product match? → <span class="pill lo">fail → escalate</span></div></div>
+      <div class="step gate"><div class="k">▣</div><div class="d"><strong>Scoring (Python)</strong> — Technical Trust Score + caps → High / Medium / Low → <span class="pill lo">Low → escalate</span></div></div>
+      <div class="step"><div class="k">5</div><div class="d"><strong>Style layer</strong> — brand voice over validated claims + guards <span class="tag">Opus</span></div></div>
+    </div>
+  </section>
+
+  <!-- 7 WALL -->
+  <section class="slide">
+    <div class="eyebrow">Technical Deep Dive · the key idea</div>
+    <h2>The Facts ↔ Style wall</h2>
+    <div class="wall">
+      <div class="card"><h3>Facts engine</h3><p class="mut">Touches evidence. Produces <strong>validated claims + caveats + a calculated confidence</strong>. Never styles.</p></div>
+      <div class="vs">VALIDATED CLAIMS ONLY →</div>
+      <div class="card"><h3>Style layer</h3><p class="mut">Never sees raw docs. Rewrites in brand voice, then is <strong>re-checked</strong>: no new claims, no dropped caveats, citations intact, banned phrases blocked.</p></div>
+    </div>
+    <p class="lead" style="margin-top:24px">This is how I answer the classic ask — <em>"make it less robotic"</em> — <strong>without</strong> risking accuracy. Voice and trust are scored separately; voice can never raise trust.</p>
+  </section>
+
+  <!-- 8 DATA ACQ -->
+  <section class="slide">
+    <div class="eyebrow">Data Strategy · acquisition</div>
+    <h2>Three sources, deliberately</h2>
+    <div class="cols3">
+      <div class="card"><h3>Real docs</h3><p class="mut">A sub-agent crawled <code>docs.paloaltonetworks.com</code> (Prisma Access, Cortex XDR, NGFW) → Markdown+frontmatter. <strong>~17 pages, 68 chunks.</strong></p></div>
+      <div class="card"><h3>PDFs</h3><p class="mut"><code>pypdf</code> ingestion + metadata sidecar. SEs live in datasheet PDFs.</p></div>
+      <div class="card"><h3>Synthetic</h3><p class="mut">Hand-seeded edge cases I <strong>needed</strong> to exist: a stale doc, a deprecated doc. You can't test a freshness cap without a stale document.</p></div>
+    </div>
+    <p style="margin-top:20px"><span class="pill lo">Hard truth</span> &nbsp;The Cortex portal is JS-rendered — the crawler got nothing. I named the coverage gap instead of faking it. That gap is <em>why</em> a Cortex exploit-protection question correctly escalates in the demo.</p>
+  </section>
+
+  <!-- 9 DATA QUALITY -->
+  <section class="slide">
+    <div class="eyebrow">Data Strategy · quality &amp; alignment</div>
+    <h2>Metadata is a first-class citizen</h2>
+    <p class="lead">Every chunk carries product, feature, version, source_type, owner, <strong>last_reviewed_date</strong>, <strong>deprecated</strong>, approval status, and votes.</p>
+    <div class="cols" style="margin-top:18px">
+      <div class="card"><h3>It drives retrieval</h3><p class="mut">Deprecated / unapproved / off-product chunks are <strong>never surfaced</strong> — a gate at the data layer.</p></div>
+      <div class="card"><h3>It drives trust</h3><p class="mut">Source authority + freshness feed the score; downvotes feed both ranking and the confidence cap. Metadata isn't decoration — it's the governance.</p></div>
+    </div>
+  </section>
+
+  <!-- 10 TRADEOFFS -->
+  <section class="slide">
+    <div class="eyebrow">Technical Deep Dive · trade-offs to defend</div>
+    <h2>Build the differentiator, buy the commodity</h2>
+    <table>
+      <tr><th>Decision</th><th>Chose</th><th>Over</th><th>Why</th></tr>
+      <tr><td><strong>Confidence</strong></td><td>Deterministic rubric</td><td>LLM-judged</td><td>Auditable, can't be gamed by fluency</td></tr>
+      <tr><td><strong>Grounding</strong></td><td>Hard gates</td><td>Prompt "please cite"</td><td>A gate guarantees; a prompt hopes</td></tr>
+      <tr><td><strong>Vector store</strong></td><td>LanceDB (embedded)</td><td>Pinecone / pgvector</td><td>Vectors+metadata+rerank, zero infra</td></tr>
+      <tr><td><strong>Facts model</strong></td><td>Opus 4.8</td><td>Haiku</td><td>Grounding fidelity where it matters</td></tr>
+      <tr><td><strong>Classifier</strong></td><td>Haiku</td><td>Opus</td><td>Latency/cost on a cheap routing call</td></tr>
+      <tr><td><strong>Embeddings</strong></td><td>Local ST</td><td>Voyage / OpenAI</td><td>Free/offline MVP; one-line swap at scale</td></tr>
+    </table>
+  </section>
+
+  <!-- 11 HITL -->
+  <section class="slide">
+    <div class="eyebrow">Human in the Loop</div>
+    <h2>The interface between AI logic &amp; the SE</h2>
+    <div class="cols">
+      <ul>
+        <li><strong>Attribution UI</strong> — the answer embeds the <strong>exact cited chunk text</strong> inline. Verify the AI's work without leaving the page.</li>
+        <li><strong>Explainable confidence</strong> — pill + score breakdown + the cap reason, all visible.</li>
+        <li><strong>Feedback → ranking, not retraining</strong> — "wrong answer" lowers source reputation (feeds rerank + cap) and opens an SME ticket.</li>
+      </ul>
+      <ul>
+        <li><strong>SME flywheel</strong> — escalate → feature-level routing → <strong>email the SME group</strong> → Approve &amp; Publish → instantly citable.</li>
+        <li><strong>Brand voice</strong> — a separate, <code>brand_voice.yaml</code>-configurable deterministic layer (terminology, guards, scored rubric).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 12 EVAL FRAMEWORK -->
+  <section class="slide">
+    <div class="eyebrow">Evaluation &amp; Success</div>
+    <h2>Beyond loss — success as trust SLOs tied to the business</h2>
+    <table>
+      <tr><th>KPI</th><th>Target</th><th>Why it's the business metric</th></tr>
+      <tr><td>Factual claims with a citation</td><td><strong>100%</strong></td><td>The product promise</td></tr>
+      <tr><td>Broken-citation rate</td><td><strong>&lt;1%</strong></td><td>A dead link destroys credibility</td></tr>
+      <tr><td>Unsupported-claim rate</td><td><strong>&lt;2%</strong></td><td>Hallucination ceiling</td></tr>
+      <tr><td>Deprecated-source usage</td><td><strong>0%</strong></td><td>Wrong-version answers lose deals</td></tr>
+      <tr><td>Low-confidence shown w/o escalation</td><td><strong>0%</strong></td><td>Know what you don't know</td></tr>
+      <tr><td>SME answer reuse</td><td><strong>↑ MoM</strong></td><td>The flywheel is working</td></tr>
+    </table>
+  </section>
+
+  <!-- 13 EVAL RESULTS -->
+  <section class="slide">
+    <div class="eyebrow">Evaluation &amp; Results</div>
+    <h2>The harness, and what it showed</h2>
+    <div class="cols3">
+      <div class="card"><div class="n">5/5/5</div><h3>Tiered eval</h3><p class="mut">5 easy / 5 medium / 5 hard, run live → easy <span class="pill hi">High</span>, medium <span class="pill me">Medium</span> (freshness-capped), hard <span class="pill lo">escalated</span>. Full breakdowns in <code>REPORT.md</code>.</p></div>
+      <div class="card"><div class="n">31</div><h3>Unit tests</h3><p class="mut">Gates, scoring, caps, brand-voice rubric, routing — the deterministic core can't silently drift.</p></div>
+      <div class="card"><div class="n">241d</div><h3>Rubric, demonstrated</h3><p class="mut">A real doc aged 241 days <strong>caps to Medium</strong>; &gt;365 days → Low/escalate. Shown, not asserted.</p></div>
+    </div>
+  </section>
+
+  <!-- 14 HARD TRUTHS -->
+  <section class="slide">
+    <div class="eyebrow">Evaluation &amp; Results · the hard truths</div>
+    <h2>What broke — and what it taught me</h2>
+    <ul>
+      <li><strong>Cross-encoder logits aren't calibrated.</strong> My absolute relevance floor was wrong — the correct chunk scored −1.0 while an off-topic one scored +1.5. Rerankers are for <em>ordering</em>; the off-topic gate belongs to the LLM.</li>
+      <li><strong>Opus 4.8 deprecates <code>temperature</code>.</strong> Chasing determinism, I set it → 400 → my fail-closed design silently escalated all 15. Determinism belongs in the Python layer, and swallowed errors need alerts.</li>
+      <li><strong>A fail-safe can become bad UX.</strong> The facts engine over-escalated answerable questions. Since the gate already stops hallucination, I biased toward answering. Trust = answering <em>when grounded</em>.</li>
+      <li><strong>Determinism has sharp edges.</strong> A normalizer produced "Palo Alto Networks <em>Networks</em>." Small bug — exactly why the deterministic layer is unit-tested.</li>
+    </ul>
+  </section>
+
+  <!-- 15 RETRO -->
+  <section class="slide">
+    <div class="eyebrow">Retrospective</div>
+    <h2>If I rebuilt it on today's stack</h2>
+    <div class="cols">
+      <div>
+        <p class="eyebrow" style="color:var(--mut)">Would change</p>
+        <ul>
+          <li><strong>Agentic retrieval</strong> — query decomposition + Corrective/Self-RAG: critique evidence, re-query before answering</li>
+          <li><strong>Tool-using agent</strong> for live doc lookup before escalating</li>
+          <li><strong>LLM-as-judge</strong> as a 2nd <em>eval</em> signal (never for user-facing confidence)</li>
+          <li><strong>Voyage embeddings + hybrid + fine-tuned reranker</strong> on feedback</li>
+          <li>Real connectors (Confluence/Jira) + streaming UX + agentic SME drafting</li>
+        </ul>
+      </div>
+      <div>
+        <p class="eyebrow" style="color:var(--mut)">Would NOT change — the spine</p>
+        <ul>
+          <li><strong>Deterministic confidence</strong></li>
+          <li><strong>Hard citation gates</strong></li>
+          <li><strong>The Facts ↔ Style wall</strong></li>
+        </ul>
+        <p class="mut" style="margin-top:14px">These earned the trust. Everything else is an optimization.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16 QA -->
+  <section class="slide">
+    <div class="eyebrow">Panel Q&amp;A</div>
+    <h2>Ready to defend</h2>
+    <div class="cols">
+      <ul>
+        <li>Why deterministic confidence, not the model's?</li>
+        <li>How do you <em>actually</em> prevent hallucination?</li>
+        <li>Brand voice vs. accuracy — both, how?</li>
+        <li>A doc is downvoted or stale — what happens?</li>
+      </ul>
+      <ul>
+        <li>Build vs. buy — justify LanceDB / local models</li>
+        <li>Latency &amp; cost at scale?</li>
+        <li>How do you measure ROI to an exec?</li>
+        <li>Biggest risk? <span class="mut">— stale knowledge, confidently presented</span></li>
+      </ul>
+    </div>
+    <p class="lead" style="margin-top:22px">Full answers in <code>PRESENTATION.md</code> · live demo at <code>localhost:8077</code></p>
+  </section>
+
+  <!-- 17 CLOSE -->
+  <section class="slide">
+    <div class="kicker">Thank you</div>
+    <h1 class="title-wrap">A measurable, auditable agent Technical Sales can trust.</h1>
+    <p class="lead">Answer only from approved evidence · cite the exact text · calculate confidence deterministically · escalate the gaps · turn SME answers into reusable knowledge.</p>
+  </section>
+
+</div>
+
+<div class="foot">
+  <div class="brand"><span class="logo"></span>paloalto · Knowledge Agent</div>
+  <div class="nav"><span id="cur">1</span> / <span id="tot">17</span> &nbsp;·&nbsp; ← →</div>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  let i=0; const tot=slides.length;
+  document.getElementById('tot').textContent=tot;
+  function show(n){
+    i=Math.max(0,Math.min(tot-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+    document.getElementById('cur').textContent=i+1;
+    document.getElementById('bar').style.width=((i+1)/tot*100)+'%';
+  }
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){show(i+1);e.preventDefault();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){show(i-1);}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(tot-1);}
+  });
+  document.getElementById('deck').addEventListener('click',e=>{
+    if(e.clientX > innerWidth*0.5) show(i+1); else show(i-1);
+  });
+  show(0);
+</script>
+</body>
+</html>

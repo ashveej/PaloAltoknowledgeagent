@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Knowledge Sales Can Trust — Visual Overview</title>
+<style>
+  :root{
+    --orange:#FA582D; --orange-d:#E0410F; --ink:#14161C; --bg:#FFFFFF; --soft:#F6F7F9;
+    --line:#E7E9EF; --txt:#1A1D24; --mut:#6B7280;
+    --hi:#1E8E3E; --hi-bg:#E7F4EC; --med:#C77700; --med-bg:#FBF0DC; --lo:#D6312B; --lo-bg:#FBE9E8;
+    --prisma:#FA582D; --ngfw:#2B6CB0; --cortex:#7C3AED;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--soft);color:var(--txt);
+    font:18px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .deck{height:100vh;overflow:hidden}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;padding:5vh 7vw 9vh;animation:fade .35s ease;background:var(--bg)}
+  .slide.on{display:flex}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .eyebrow{color:var(--orange-d);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:13px;margin-bottom:12px}
+  h1{font-size:48px;line-height:1.1;letter-spacing:-1.2px;margin:0 0 16px}
+  h2{font-size:34px;letter-spacing:-.6px;margin:0 0 26px;display:flex;align-items:center;gap:14px}
+  h2:before{content:"";width:13px;height:30px;background:var(--orange);border-radius:4px}
+  p{margin:0 0 12px}.mut{color:var(--mut)}
+  .lead{font-size:22px;color:#333842;max-width:62ch}
+  strong{color:#000}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:center}
+  .cols3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 6px 22px -12px rgba(16,18,26,.18)}
+  .card.soft{background:var(--soft);box-shadow:none}
+  .icon{font-size:34px;line-height:1;margin-bottom:10px}
+  .card h3{margin:0 0 6px;font-size:20px}
+  .big{font-size:30px;line-height:1.35}
+  .huge{font-size:64px;font-weight:800;letter-spacing:-2px;line-height:1;color:var(--orange-d)}
+  /* pipeline */
+  .pipe{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap}
+  .stage{flex:1;min-width:150px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center;box-shadow:0 6px 22px -14px rgba(16,18,26,.2)}
+  .stage .si{font-size:30px}
+  .stage h4{margin:8px 0 4px;font-size:15px}
+  .stage p{font-size:12.5px;color:var(--mut);margin:0}
+  .arrow{align-self:center;color:var(--orange);font-size:24px;font-weight:800}
+  .branch{margin-top:16px;background:var(--lo-bg);border:1px solid #F1C6C2;border-radius:14px;padding:14px 18px;display:flex;gap:12px;align-items:center}
+  .branch .si{font-size:26px}
+  /* confidence */
+  .conf{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .clevel{border-radius:16px;padding:18px;border:1px solid var(--line)}
+  .clevel.h{background:var(--hi-bg);border-color:#Bfe2C8}
+  .clevel.m{background:var(--med-bg);border-color:#EAD6A6}
+  .clevel.l{background:var(--lo-bg);border-color:#F1C6C2}
+  .clevel .lab{font-weight:800;font-size:20px}
+  .clevel.h .lab{color:var(--hi)}.clevel.m .lab{color:var(--med)}.clevel.l .lab{color:var(--lo)}
+  /* answer demo */
+  .demo{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+  .demo .q{background:var(--soft);padding:14px 18px;font-weight:700;border-bottom:1px solid var(--line)}
+  .demo .a{padding:16px 18px;font-size:16px}
+  .pill{display:inline-flex;align-items:center;gap:7px;padding:5px 13px;border-radius:999px;font-weight:800;font-size:14px}
+  .pill.h{background:var(--hi-bg);color:var(--hi)} .pill.m{background:var(--med-bg);color:var(--med)}
+  .quotebox{margin-top:14px;border-left:3px solid var(--orange);background:var(--soft);border-radius:0 10px 10px 0;padding:12px 14px;font-size:14px}
+  .quotebox .src{font-size:12px;color:var(--mut);margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  /* donut + bars */
+  .donut-wrap{display:flex;align-items:center;gap:34px}
+  .pie{width:188px;height:188px;border-radius:50%;flex:none;position:relative;
+    background:conic-gradient(var(--prisma) 0 44.4%, var(--ngfw) 44.4% 77.7%, var(--cortex) 77.7% 100%)}
+  .pie:after{content:"";position:absolute;inset:30px;background:#fff;border-radius:50%}
+  .pie .ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1}
+  .pie .ctr b{font-size:38px;font-weight:800;line-height:1}.pie .ctr span{font-size:12px;color:var(--mut)}
+  .legend div{display:flex;align-items:center;gap:9px;margin:9px 0;font-size:16px}
+  .sw{width:14px;height:14px;border-radius:4px;flex:none}
+  .barrow{display:flex;align-items:center;gap:12px;margin:12px 0}
+  .barrow .lbl{width:160px;font-weight:700;font-size:15px}
+  .track{flex:1;height:30px;background:var(--soft);border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+  .track>i{display:block;height:100%;border-radius:8px;display:flex;align-items:center;justify-content:flex-end;color:#fff;font-weight:800;font-size:13px;padding-right:10px}
+  .dots{display:flex;gap:6px}.dotc{width:18px;height:18px;border-radius:50%}
+  .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .kpi .card{text-align:center}
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .vs .card.bad{border-color:#F1C6C2}.vs .card.good{border-color:#Bfe2C8;background:#fff}
+  .vs h3{display:flex;align-items:center;gap:8px}
+  .chk{color:var(--hi);font-weight:800}.crs{color:var(--lo);font-weight:800}
+  /* chrome */
+  .bar{position:fixed;left:0;top:0;height:4px;background:var(--orange);z-index:9;transition:width .25s}
+  .foot{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:center;padding:11px 26px;font-size:12.5px;color:var(--mut);z-index:8}
+  .foot .brand{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--ink)}
+  .foot .logo{width:16px;height:16px;border-radius:5px;background:var(--orange);position:relative}
+  .foot .logo:after{content:"";position:absolute;inset:4px 3px;border-left:2px solid #fff;border-right:2px solid #fff}
+  .kicker{display:inline-block;background:var(--lo-bg);color:var(--orange-d);border:1px solid #F1C6C2;border-radius:999px;padding:6px 16px;font-size:14px;font-weight:800;margin-bottom:22px}
+  @media print{.slide{display:flex!important;position:relative;height:100vh;page-break-after:always;inset:auto}.bar,.foot .nav{display:none}html,body,.deck{height:auto;overflow:visible}}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 TITLE -->
+  <section class="slide on">
+    <div class="kicker">Product Overview</div>
+    <h1>Knowledge that Sales<br>can actually trust.</h1>
+    <p class="lead">An AI assistant for our sales teams that answers product questions <strong>only from approved company sources</strong> — and always shows its work and how sure it is.</p>
+    <p class="mut" style="margin-top:24px">Everything in this deck is backed by the working system and real data.</p>
+  </section>
+
+  <!-- 2 PROBLEM -->
+  <section class="slide">
+    <div class="eyebrow">The problem</div>
+    <h2>Sales teams get hard questions — live, on the spot</h2>
+    <div class="cols3">
+      <div class="card soft"><div class="icon">⏱️</div><h3>Questions come fast</h3><p class="mut">"Does our product support X in version Y?" — asked in the middle of a customer call.</p></div>
+      <div class="card soft"><div class="icon">🗂️</div><h3>Answers are scattered &amp; go stale</h3><p class="mut">Spread across manuals, release notes, and wikis — across products and versions. It ages.</p></div>
+      <div class="card soft"><div class="icon">📉</div><h3>A wrong answer costs the deal</h3><p class="mut">Confidently saying the wrong thing loses technical credibility — and trust is hard to win back.</p></div>
+    </div>
+    <p class="lead" style="margin-top:26px">A generic chatbot makes this <strong>worse</strong> — it sounds confident even when it's guessing, with no proof.</p>
+  </section>
+
+  <!-- 3 THE IDEA -->
+  <section class="slide">
+    <div class="eyebrow">The idea</div>
+    <h2>An expert assistant that never guesses</h2>
+    <div class="cols">
+      <div>
+        <p class="big">Think of it as a <strong>diligent research assistant</strong> who:</p>
+        <ul style="list-style:none;padding:0;font-size:19px">
+          <li style="padding:8px 0">📗 only quotes <strong>approved</strong> company sources</li>
+          <li style="padding:8px 0">🧾 shows the <strong>exact quote</strong> behind every answer</li>
+          <li style="padding:8px 0">🎯 tells you <strong>how confident</strong> it is — and why</li>
+          <li style="padding:8px 0">🙋 <strong>asks a human expert</strong> when it isn't sure</li>
+        </ul>
+      </div>
+      <div class="card" style="text-align:center">
+        <div class="icon" style="font-size:54px">🛡️</div>
+        <p class="big" style="margin:6px 0">"No proof,<br>no answer."</p>
+        <p class="mut">The one rule the whole system is built around.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 HOW IT WORKS / ARCHITECTURE -->
+  <section class="slide">
+    <div class="eyebrow">How it works</div>
+    <h2>From question to trusted answer — in five steps</h2>
+    <div class="pipe">
+      <div class="stage"><div class="si">🧭</div><h4>1 · Understand</h4><p>Which product &amp; topic is being asked about?</p></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="si">📚</div><h4>2 · Find sources</h4><p>Search only approved, current documents.</p></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="si">✍️</div><h4>3 · Draft w/ quotes</h4><p>Write only what the sources actually say.</p></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="si">✅</div><h4>4 · Check &amp; score</h4><p>Verify every claim has a quote; score confidence.</p></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="si">✨</div><h4>5 · Polish</h4><p>Make it sound great — facts unchanged.</p></div>
+    </div>
+    <div class="branch"><div class="si">🙋</div><div><strong>Not enough proof at step 4?</strong> &nbsp;The answer is blocked and the question is sent to the right human expert instead. The system never bluffs.</div></div>
+  </section>
+
+  <!-- 5 SHOWS ITS WORK (real example) -->
+  <section class="slide">
+    <div class="eyebrow">It always shows its work · real example</div>
+    <h2>Every answer comes with the receipt</h2>
+    <div class="demo">
+      <div class="q">❓ "What's the maximum number of BGP IP addresses per remote network?"</div>
+      <div class="a">
+        <span class="pill h">● High confidence · scored 97/100</span>
+        <p style="margin:12px 0 0"><strong>Prisma Access supports a maximum of 250</strong> local BGP IP addresses per remote network — 250 with a primary tunnel only, 125 with 2 links, or 62 with 4 links.</p>
+        <div class="quotebox"><div class="src">📗 Source: Prisma Access — “Onboard a Remote Network”</div>
+          “A maximum of 250 local BGP IP addresses is supported per remote network. This translates to 250 remote networks with a primary tunnel only…”</div>
+      </div>
+    </div>
+    <p class="mut" style="margin-top:14px">The exact source text is shown <strong>inline</strong> — a salesperson can verify the answer without leaving the screen.</p>
+  </section>
+
+  <!-- 6 CONFIDENCE -->
+  <section class="slide">
+    <div class="eyebrow">It tells you how sure it is</div>
+    <h2>Three confidence levels — calculated, not guessed</h2>
+    <div class="conf">
+      <div class="clevel h"><div class="lab">● High</div><p style="margin:8px 0 0">Current, official sources fully back the answer. <strong>Use it with confidence.</strong></p></div>
+      <div class="clevel m"><div class="lab">● Medium</div><p style="margin:8px 0 0">Backed, but the source is older or less authoritative. <strong>Double-check the detail.</strong></p></div>
+      <div class="clevel l"><div class="lab">● Low</div><p style="margin:8px 0 0">Not enough proof. <strong>Sent to a human expert</strong> instead of answered.</p></div>
+    </div>
+    <div class="card soft" style="margin-top:22px;display:flex;gap:14px;align-items:center">
+      <div class="icon" style="margin:0">📅</div>
+      <div><strong>Real example:</strong> a decryption answer was correct — but its source hadn't been reviewed in <strong>241 days</strong>, so the system automatically downgraded it from High to <span class="pill m" style="font-size:12px">● Medium</span>. Freshness is built into the score.</div>
+    </div>
+  </section>
+
+  <!-- 7 SME FLYWHEEL -->
+  <section class="slide">
+    <div class="eyebrow">When it's not sure, a human steps in</div>
+    <h2>The knowledge flywheel</h2>
+    <div class="pipe">
+      <div class="stage"><div class="si">🚫</div><h4>Can't answer</h4><p>Not enough approved proof.</p></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="si">📧</div><h4>Email the expert</h4><p>Routed to the right SME group automatically.</p></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="si">🧑‍🔬</div><h4>Expert replies</h4><p>The SME writes the authoritative answer.</p></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="si">💾</div><h4>Saved forever</h4><p>It becomes an approved, citable source.</p></div>
+      <div class="arrow">→</div>
+      <div class="stage"><div class="si">⚡</div><h4>Instant next time</h4><p>Everyone gets the answer immediately.</p></div>
+    </div>
+    <p class="lead" style="margin-top:24px">The system gets <strong>smarter every time an expert answers</strong> — yesterday's escalation is today's instant, cited answer.</p>
+  </section>
+
+  <!-- 8 DATA: KB -->
+  <section class="slide">
+    <div class="eyebrow">The knowledge behind it · real data</div>
+    <h2>What the assistant draws on today</h2>
+    <div class="cols">
+      <div class="donut-wrap">
+        <div class="pie"><div class="ctr"><b>18</b><span>sources</span></div></div>
+        <div class="legend">
+          <div><span class="sw" style="background:var(--prisma)"></span> Prisma Access — <strong>8 sources</strong></div>
+          <div><span class="sw" style="background:var(--ngfw)"></span> NGFW / PAN-OS — <strong>6 sources</strong></div>
+          <div><span class="sw" style="background:var(--cortex)"></span> Cortex XDR — <strong>4 sources</strong></div>
+        </div>
+      </div>
+      <div class="cols3" style="grid-template-columns:1fr 1fr">
+        <div class="card" style="text-align:center"><div class="huge">69</div><p class="mut">searchable passages</p></div>
+        <div class="card" style="text-align:center"><div class="huge">3</div><p class="mut">product lines</p></div>
+        <div class="card" style="text-align:center;grid-column:1/3"><div class="big"><span class="chk">14 fresh</span> · <span style="color:var(--med)">4 flagged for review</span></div><p class="mut" style="margin:4px 0 0">The system tracks how old every source is — and flags stale ones automatically.</p></div>
+      </div>
+    </div>
+    <p class="mut" style="margin-top:14px">Sources include real Palo Alto Networks product docs, release notes, and PDFs — plus expert answers as they're added.</p>
+  </section>
+
+  <!-- 9 DATA: RESULTS -->
+  <section class="slide">
+    <div class="eyebrow">Does it actually work? · real test</div>
+    <h2>We tested 15 real questions across difficulty</h2>
+    <div class="barrow"><div class="lbl">Easy questions</div><div class="track"><i style="width:100%;background:var(--hi)">5 / 5 answered · High</i></div></div>
+    <div class="barrow"><div class="lbl">Medium questions</div><div class="track"><i style="width:100%;background:var(--med)">5 / 5 answered · Medium</i></div></div>
+    <div class="barrow"><div class="lbl">Hard / not in KB</div><div class="track"><i style="width:100%;background:var(--lo)">5 / 5 correctly sent to an expert</i></div></div>
+    <div class="card" style="margin-top:22px;display:flex;align-items:center;gap:16px;background:var(--hi-bg);border-color:#Bfe2C8">
+      <div class="huge" style="color:var(--hi)">15/15</div>
+      <div class="big">correct behavior — it <strong>answered</strong> what it could prove, and <strong>escalated</strong> the rest. It never bluffed.</div>
+    </div>
+  </section>
+
+  <!-- 10 KPIs -->
+  <section class="slide">
+    <div class="eyebrow">The numbers that matter</div>
+    <h2>How we define "good" — and hit it</h2>
+    <div class="kpi">
+      <div class="card"><div class="huge">100%</div><p class="mut">of answers carry a source citation</p></div>
+      <div class="card"><div class="huge">0%</div><p class="mut">use outdated / retired sources</p></div>
+      <div class="card"><div class="huge">0</div><p class="mut">low-confidence answers shown without an expert</p></div>
+    </div>
+    <p class="lead" style="margin-top:26px">Success isn't "sounds smart." It's <strong>every claim proven, nothing stale, and honesty about what it doesn't know.</strong></p>
+  </section>
+
+  <!-- 11 VS CHATBOT -->
+  <section class="slide">
+    <div class="eyebrow">Why this is different</div>
+    <h2>Not just another chatbot</h2>
+    <div class="vs">
+      <div class="card bad">
+        <h3><span class="crs">✕</span> A generic AI chatbot</h3>
+        <ul style="list-style:none;padding:0">
+          <li style="padding:6px 0">Answers from the open internet &amp; memory</li>
+          <li style="padding:6px 0">Sounds confident even when wrong</li>
+          <li style="padding:6px 0">No proof, no source, no audit trail</li>
+          <li style="padding:6px 0">Never improves from our experts</li>
+        </ul>
+      </div>
+      <div class="card good">
+        <h3><span class="chk">✓</span> This knowledge assistant</h3>
+        <ul style="list-style:none;padding:0">
+          <li style="padding:6px 0">Answers <strong>only</strong> from approved sources</li>
+          <li style="padding:6px 0">Tells you how sure it is — and <strong>why</strong></li>
+          <li style="padding:6px 0">Shows the <strong>exact quote</strong> every time</li>
+          <li style="padding:6px 0"><strong>Learns</strong> from every expert answer</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 NEXT -->
+  <section class="slide">
+    <div class="eyebrow">What's next</div>
+    <h2>Where this goes</h2>
+    <div class="cols3">
+      <div class="card soft"><div class="icon">🔌</div><h3>Connect more sources</h3><p class="mut">Wikis, ticketing, and live docs — automatically kept current.</p></div>
+      <div class="card soft"><div class="icon">🧑‍🔬</div><h3>Help experts answer faster</h3><p class="mut">Pre-draft expert replies so they edit instead of write.</p></div>
+      <div class="card soft"><div class="icon">📈</div><h3>Measure deal impact</h3><p class="mut">Track faster answers, fewer expert interruptions, more wins.</p></div>
+    </div>
+    <p class="lead" style="margin-top:26px">The foundation is the part that earns trust — <strong>proof, honest confidence, and human experts in the loop.</strong></p>
+  </section>
+
+  <!-- 13 CLOSE -->
+  <section class="slide">
+    <div class="kicker">Thank you</div>
+    <h1>Answers our teams can stand behind.</h1>
+    <p class="lead">Only approved sources · the exact proof shown · honest confidence · experts in the loop · smarter every day.</p>
+  </section>
+
+</div>
+
+<div class="foot">
+  <div class="brand"><span class="logo"></span>paloalto · Knowledge Agent</div>
+  <div class="nav"><span id="cur">1</span> / <span id="tot">13</span> &nbsp;·&nbsp; use ← →</div>
+</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')]; let i=0; const tot=slides.length;
+  document.getElementById('tot').textContent=tot;
+  function show(n){i=Math.max(0,Math.min(tot-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('on',k===i));
+    document.getElementById('cur').textContent=i+1;
+    document.getElementById('bar').style.width=((i+1)/tot*100)+'%';
+    if(location.hash!=='#'+(i+1))history.replaceState(null,'','#'+(i+1));}
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){show(i+1);e.preventDefault();}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){show(i-1);}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(tot-1);}});
+  document.getElementById('deck').addEventListener('click',e=>{
+    if(e.target.closest('a'))return;
+    if(e.clientX>innerWidth*0.5)show(i+1); else show(i-1);});
+  show((parseInt((location.hash||'#1').slice(1))||1)-1);
+</script>
+</body>
+</html>

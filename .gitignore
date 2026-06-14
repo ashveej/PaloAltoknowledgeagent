@@ -1,0 +1,23 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.cache/
+
+# Secrets — NEVER commit
+.env
+**/.env
+
+# OS
+.DS_Store
+
+# Built / runtime artifacts (rebuild with: cd dashboard && python -m app.ingest --reset)
+dashboard/data/lancedb/
+dashboard/data/answers/
+dashboard/data/escalations/
+dashboard/data/feedback/
+dashboard/data/outbox/
+
+# Local tooling
+.claude/

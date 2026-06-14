@@ -1,0 +1,131 @@
+# =============================================================================
+# Palo Alto Networks — Technical Sales brand voice (DETERMINISTIC + CONFIGURABLE)
+#
+# This file is the single source of truth for brand voice. Editing it changes how
+# answers are steered (LLM), enforced (terminology), guarded (hard rules), and
+# scored (Experience Quality Score) — with no code changes.
+#
+# The style layer NEVER changes technical meaning, drops caveats, or alters
+# confidence. It only shapes presentation. (See ARCHITECTURE.md §2.)
+# =============================================================================
+
+name: "Palo Alto Networks — Technical Sales"
+max_answer_words: 180
+
+# ---------------------------------------------------------------------------
+# voice_principles — injected verbatim into the style model's system prompt.
+# This steers tone; the deterministic layers below enforce it.
+# ---------------------------------------------------------------------------
+voice_principles: |
+  Write in Palo Alto Networks' voice for a Technical Sales / Sales Engineering audience:
+  - Confident and authoritative, grounded in evidence — never hedge or speculate.
+  - Clear and consultative: speak as a trusted security partner, not a brochure.
+  - Technically precise. Prefer exact mechanisms, versions, and conditions.
+  - Outcome-focused. Connect capabilities to customer value, without hype.
+  - Lead with a direct answer (Yes / No / It depends — with the condition).
+  - Preserve every technical condition, limitation, and caveat from the evidence.
+  - Use exact Palo Alto Networks product names with correct capitalization.
+  - Close with a brief, practical "How to position this" line for the SE.
+
+# ---------------------------------------------------------------------------
+# terminology — canonical: [known wrong variants]. The deterministic formatter
+# rewrites any variant to the canonical form (case-insensitive, whole word).
+# ---------------------------------------------------------------------------
+terminology:
+  "Palo Alto Networks": ["palo alto networks", "Palo alto networks", "PANW"]
+  "Prisma Access": ["prisma access", "Prisma access", "prisma Access"]
+  "Prisma SASE": ["prisma sase", "prisma Sase"]
+  "Cortex XDR": ["cortex xdr", "Cortex Xdr", "cortex XDR", "Cortex xdr"]
+  "Cortex XSIAM": ["cortex xsiam", "Cortex Xsiam"]
+  "PAN-OS": ["pan-os", "PanOS", "Pan-OS", "panos", "PAN OS"]
+  "NGFW": ["ngfw", "Ngfw"]
+  "GlobalProtect": ["globalprotect", "Global Protect", "global protect"]
+  "Panorama": ["panorama"]
+  "Strata": ["strata"]
+  "Strata Cloud Manager": ["strata cloud manager"]
+  "App-ID": ["app-id", "appid", "App-Id"]
+  "Precision AI": ["precision ai", "precision Ai"]
+
+# ---------------------------------------------------------------------------
+# banned_phrases — HARD guard. If any appears, the styled rewrite is rejected
+# and the answer falls back to the plain validated claims. Also costs tone points.
+# ---------------------------------------------------------------------------
+banned_phrases:
+  - "as an ai language model"
+  - "as an ai"
+  - "based on my training data"
+  - "it appears that maybe"
+  - "you should check the documentation yourself"
+  - "i think"
+  - "i believe"
+  - "probably"
+  - "i'm not sure"
+
+# ---------------------------------------------------------------------------
+# banned_hype — marketing fluff / unfalsifiable claims. Costs tone points
+# (penalized, not hard-blocked). Brand voice is confident, not boastful.
+# ---------------------------------------------------------------------------
+banned_hype:
+  - "world's best"
+  - "world-class"
+  - "revolutionary"
+  - "game-changing"
+  - "game changer"
+  - "bulletproof"
+  - "100% secure"
+  - "completely secure"
+  - "unhackable"
+  - "silver bullet"
+  - "magic"
+
+# Markers used by deterministic checks
+direct_answer_markers:
+  ["yes", "no", "it depends", "supported", "not supported", "available",
+   "requires", "is able", "does not", "cannot", "you can"]
+
+positioning_markers:
+  ["position this", "how to position", "for a customer", "for the customer",
+   "next step", "recommend", "talk track", "in a customer conversation"]
+
+# ---------------------------------------------------------------------------
+# rubric — Experience Quality Score (0-100). Same rigor as the Technical Trust
+# Score: weighted, deterministic, explainable. Points must sum to 100.
+# `check` maps to a deterministic function in app/style.py.
+# ---------------------------------------------------------------------------
+rubric:
+  - id: direct_answer_first
+    label: "Leads with a direct answer"
+    points: 20
+    check: direct_answer
+  - id: product_terminology
+    label: "Correct Palo Alto product terminology"
+    points: 15
+    check: terminology
+  - id: caveat_preservation
+    label: "Preserves source caveats"
+    points: 15
+    check: caveats_preserved
+  - id: conciseness
+    label: "Within length guideline"
+    points: 15
+    check: word_limit
+  - id: sales_positioning
+    label: "Includes SE positioning / next step"
+    points: 15
+    check: positioning
+  - id: citation_readability
+    label: "Citations attached to claims"
+    points: 10
+    check: citations_present
+  - id: tone_compliance
+    label: "On-brand tone (no banned phrases / hype)"
+    points: 10
+    check: tone
+
+# ---------------------------------------------------------------------------
+# guards — HARD rules. If any fails, the styled rewrite is discarded and we ship
+# the plain validated claims instead (never ship a guard-failing rewrite).
+# ---------------------------------------------------------------------------
+guards:
+  - banned_phrase     # a banned phrase is present
+  - dropped_caveat    # a source caveat was lost in the rewrite
