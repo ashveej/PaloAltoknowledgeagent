@@ -18,7 +18,7 @@ reusable, citable knowledge.
 | **`/specs`** | Product & technical specifications, architecture + diagrams, brand-voice spec, the presentation script, and a study guide. | *Markdown product & technical specs* |
 | **`/pipeline_and_tests`** | The **confidence metric** (`scoring.py`), **data-quality gates** (`gates.py`), the **test suite** (`tests/`), and the **evaluation runner** (`make_report.py` → `REPORT.md`). | *Code for calculating the metric + data-quality tests* |
 | **`/dashboard`** | The runnable application: the agent engine (`app/`) + the web UI (`ui/`, incl. the metrics Dashboard tab). **This is the source of truth for all runnable code.** | *Visualization prototype* |
-| **`/presentation`** | The executive decks (`slides.html` technical, `presentation.html` visual) + both as **PDF**. | *Executive Presentation (PDF)* |
+| **`/presentation`** | The executive decks (`slides.html` technical, `presentation.html` visual) — open in a browser to present live — plus `SLIDES_OUTLINE.md` (paste-ready for Google Slides). | *Executive Presentation* |
 
 > **A note on structure:** this is a single, cohesive application. The runnable source of
 > truth lives in **`/dashboard`**. To honor the requested layout, the data-generation
@@ -77,6 +77,13 @@ uvicorn app.main:app --reload --port 8077
 FastAPI · LanceDB (vector store + metadata) · Claude (Opus 4.8 facts/style, Haiku 4.5
 classify) · local `sentence-transformers` embeddings + cross-encoder reranker · vanilla
 HTML/JS UI · `pytest`.
+
+## Executive presentation
+Open [`presentation/slides.html`](presentation/slides.html) (technical) or
+[`presentation/presentation.html`](presentation/presentation.html) (visual) in a browser
+to present live — arrow keys to navigate. A paste-ready outline for Google Slides is in
+[`presentation/SLIDES_OUTLINE.md`](presentation/SLIDES_OUTLINE.md).
+**Google Slides:** _<add your link here>_
 
 ## Where to read more
 - **Architecture + diagrams:** [`specs/architecture.md`](specs/architecture.md)

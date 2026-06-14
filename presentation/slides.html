@@ -71,6 +71,7 @@
     .bar,.foot .nav{display:none}
     html,body,.deck{height:auto;overflow:visible}
   }
+@media print{*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}.slide{display:flex!important;position:relative!important;inset:auto!important;height:100vh!important;page-break-after:always;break-after:page}.bar{display:none}}
 </style>
 </head>
 <body>
@@ -348,7 +349,7 @@
   document.getElementById('deck').addEventListener('click',e=>{
     if(e.clientX > innerWidth*0.5) show(i+1); else show(i-1);
   });
-  show(0);
+  show((parseInt((location.hash||'#1').slice(1))||1)-1);
 </script>
 </body>
 </html>
