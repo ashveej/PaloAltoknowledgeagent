@@ -61,11 +61,13 @@ def setrun(p, text, size, color, bold=False, italic=False):
 
 
 def rich(p, text, size, base=TXT):
-    for seg in re.split(r"(\*\*.*?\*\*)", text):
+    for seg in re.split(r"(\*\*.*?\*\*|_.+?_)", text):
         if not seg:
             continue
         if seg.startswith("**") and seg.endswith("**"):
             setrun(p, seg[2:-2], size, TXT, bold=True)
+        elif seg.startswith("_") and seg.endswith("_") and len(seg) > 2:
+            setrun(p, seg[1:-1], size, base, italic=True)
         else:
             setrun(p, seg, size, base)
 
@@ -210,9 +212,9 @@ two_col(s,
      "**Applied AI track record:** a GenAI content platform with LLM orchestration; Salesforce Agentforce (intelligent routing, case deflection, AI summaries); predictive account scoring with Data Science.",
      "This product is my world rebuilt on an LLM — **knowledge, routing, approvals, and scoring**, grounded and governed."],
     ["**My operating system as a Technical PM:**",
-     "**Slice the risk** — ship the thinnest vertical that retires the riskiest assumption first (here: *trust*).",
-     "**Determinism where trust lives** — the LLM drafts language; code makes the trust decisions.",
-     "**Make trust legible** — every score is explained; every claim shows its source."],
+     "**Tackle the scariest risk first.** I built the full trust loop (cited answer → confidence → escalation) before any polish — the real risk was trust, not “can AI answer.”",
+     "**Let the AI write; let code decide.** The AI drafts the wording; rules decide what's cited and how confident we are — predictable and auditable.",
+     "**Show your work.** Never just “Medium” — explain why, and show the exact source so the user can verify."],
     top=2.15, size=14); footer(s, 4)
 
 # 5 DIVIDER — Context & Problem
@@ -289,20 +291,38 @@ s = slide(); divider(s, "4 of 5", "Evaluation & Results", "10 minutes",
 
 # 13 HOW I MEASURED SUCCESS
 s = slide(); eyebrow(s, "Evaluation & Results"); heading(s, "How I measured success")
-bullets(s, [
-    "Not “does it sound smart?” — I set quality bars a salesperson can rely on:",
-], top=1.9, size=15, gap=6)
-table(s, ["What I measured", "Target"], [
-    ["Every answer shows its source", "100%"],
-    ["Answers drawn from outdated / retired documents", "0%"],
-    ["A shaky answer shown as if it were solid", "0%  (it asks a human instead)"],
-], top=2.5, col_w=[8.4, 3.0], size=14)
-b = box(s, 0.95, 4.55, 11.4, 1.6, fill=HIB, line=HI)
-tf = tbox(s, 1.25, 4.7, 10.9, 1.35, anchor=MSO_ANCHOR.MIDDLE)
-setrun(tf.paragraphs[0], "How I validated it", 14, HI, bold=True)
-p = tf.add_paragraph(); p.space_before = Pt(5)
-rich(p, "I tested **15 real questions** — 5 easy, 5 medium, 5 hard. It **answered** the ones it could "
-        "prove and **asked a human** for the rest. **15 / 15 correct behavior** — it never bluffed.", 15)
+setrun(tbox(s, 0.95, 1.8, 11.4, 0.4).paragraphs[0],
+       "I set quality bars a salesperson can rely on — then validated with real questions:", 15, TXT)
+# metric chips
+for i, (big, lab) in enumerate([("100%", "every answer shows its source"),
+                                ("0%", "from outdated / retired documents"),
+                                ("0%", "shaky answers shown as solid")]):
+    l = 0.95 + i * (3.7 + 0.18)
+    box(s, l, 2.32, 3.7, 1.0, fill=HIB, line=HI)
+    tf = tbox(s, l, 2.42, 3.7, 0.85); p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
+    setrun(p, big, 26, HI, bold=True)
+    p2 = tf.add_paragraph(); p2.alignment = PP_ALIGN.CENTER; setrun(p2, lab, 12, TXT)
+# example tests
+setrun(tbox(s, 0.95, 3.55, 11.4, 0.4).paragraphs[0],
+       "Validated with 15 real questions — 5 easy · 5 medium · 5 hard. A few examples:", 14, TXT, bold=True)
+ex = s.shapes.add_table(4, 3, Inches(0.95), Inches(4.0), Inches(11.4), Inches(1.7)).table
+for col, w in zip(range(3), [6.4, 1.6, 3.4]):
+    ex.columns[col].width = Inches(w)
+for j, h in enumerate(["Sample question", "Difficulty", "Result"]):
+    c = ex.cell(0, j); c.fill.solid(); c.fill.fore_color.rgb = TXT
+    setrun(c.text_frame.paragraphs[0], h, 12.5, CARD, bold=True)
+for i, (q, d, r, col) in enumerate([
+        ("“What is the max number of BGP IP addresses per remote network?”", "Easy", "High · answered + cited", HI),
+        ("“What are the decryption types on the NGFW?”", "Medium", "Medium · source is 241 days old", MED),
+        ("“What is the per-user price of Prisma Access?”", "Hard", "Escalated to an SME", LO)], 1):
+    fill = CARD if i % 2 else BG
+    for j, (val, c_) in enumerate([(q, TXT), (d, TXT), (r, col)]):
+        c = ex.cell(i, j); c.fill.solid(); c.fill.fore_color.rgb = fill
+        setrun(c.text_frame.paragraphs[0], val, 12, c_, bold=(j > 0))
+# takeaway
+box(s, 0.95, 5.9, 11.4, 0.92, fill=HIB, line=HI)
+rich(tbox(s, 1.25, 5.99, 10.9, 0.74, anchor=MSO_ANCHOR.MIDDLE).paragraphs[0],
+     "**15 / 15 correct behavior** — it answered what it could prove, and asked a human for the rest. It never bluffed.", 14)
 footer(s, 13)
 
 # 14 HARD TRUTHS (plain language)
