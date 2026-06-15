@@ -136,12 +136,14 @@ never let the model set its own confidence.
 
 ## F. Curveballs & honesty
 
-**Q16. You're a CRM PM, not an ML engineer — how do I know you understand this?**
-**A.** *As a PM my job is the right trade-offs, the user value, and the evaluation — and I
-can defend all three.* I built this end-to-end to learn the stack, and my CRM background is
-the strength here: this is Salesforce Knowledge + Omni-Channel routing + Approval Processes
-+ Einstein scoring, rebuilt on an LLM with strict grounding. For the deepest model
-internals I'd pair with an engineer — and here's how I'd reason about that trade-off.
+**Q16. How deep is your AI experience — can you own the technical decisions?**
+**A.** *I've shipped applied AI in production, and my job as a PM is the trade-offs, the
+user value, and the evaluation — I can defend all three.* I've delivered a GenAI content
+platform with LLM orchestration, Salesforce Agentforce (intelligent routing, case
+deflection, AI summaries), and predictive account scoring with Data Science. This product
+is exactly that world — knowledge, routing, approvals, and scoring — rebuilt on an LLM with
+strict grounding. For the deepest model internals I partner with engineering, and here's
+how I reason about the trade-off…
 
 **Q17. What would you do if you had two more weeks?**
 **A.** Close the human-bottleneck gap: agentic SME drafting and a feedback-tuned reranker,

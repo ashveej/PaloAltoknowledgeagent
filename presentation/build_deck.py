@@ -206,30 +206,30 @@ s = slide(); divider(s, "1 of 5", "Introduction", "5 minutes",
 # 4 BACKGROUND + PHILOSOPHY
 s = slide(); eyebrow(s, "Introduction"); heading(s, "My background & Technical-PM philosophy")
 two_col(s,
-    ["**Background:** CRM / Salesforce PM — I've shipped knowledge and routing systems for sales teams.",
-     "This product is those patterns rebuilt for AI: **Knowledge articles, Omni-Channel routing, approval flows, scoring** — now grounded in an LLM.",
-     "New to the AI stack; I learned it by building this end-to-end."],
+    ["**Staff Product Manager — 15+ years** in enterprise CRM transformation & AI-enabled workflow automation (Walmart, DoorDash, Amplitude, Gusto, Akamai).",
+     "**Applied AI track record:** a GenAI content platform with LLM orchestration; Salesforce Agentforce (intelligent routing, case deflection, AI summaries); predictive account scoring with Data Science.",
+     "This product is my world rebuilt on an LLM — **knowledge, routing, approvals, and scoring**, grounded and governed."],
     ["**My operating system as a Technical PM:**",
      "**Slice the risk** — ship the thinnest vertical that retires the riskiest assumption first (here: *trust*).",
      "**Determinism where trust lives** — the LLM drafts language; code makes the trust decisions.",
      "**Make trust legible** — every score is explained; every claim shows its source."],
-    top=2.2, size=15); footer(s, 4)
+    top=2.15, size=14); footer(s, 4)
 
 # 5 DIVIDER — Context & Problem
 s = slide(); divider(s, "2 of 5", "Context & Problem", "5 minutes",
                      "The task (RAG) · the core user pain point")
 
 # 6 PROBLEM + TASK
-s = slide(); eyebrow(s, "Context & Problem"); heading(s, "The task, and the user pain it solves")
+s = slide(); eyebrow(s, "Context & Problem"); heading(s, "The need, and the user pain it solves")
 two_col(s,
-    ["**The user:** Technical Sales / Sales Engineers, answering product questions **live in a customer call.**",
-     "**The pain:** a confident-but-wrong answer loses credibility and the deal.",
-     "Product truth is scattered across docs, release notes, and wikis — and it **goes stale**.",
-     "Experts re-answer the same questions in Slack; that knowledge is never reused."],
+    ["**The user:** Technical Sales team members who need answers about a **specific Palo Alto product**.",
+     "**The need:** a system where they can ask a product question and get a **trustworthy, sourced** answer.",
+     "**The pain:** product truth is **scattered** across docs, release notes, and wikis — and it **goes stale**.",
+     "Experts re-answer the same questions; that knowledge is never captured or reused."],
     ["**The task = Retrieval-Augmented Generation (RAG)**, with a human-in-the-loop.",
      "RAG = retrieve approved documents first, then have the AI answer **only** from them, with citations.",
      "Not a chatbot: a generic chatbot hallucinates with no proof — a liability for a security vendor.",
-     "_Analogy: give a rep the official binder and say 'only quote from this, cite the page.'_"],
+     "_Analogy: give the team the official binder and say 'only quote from this, cite the page.'_"],
     top=2.2, size=15); footer(s, 6)
 
 # 7 DIVIDER — Technical Deep Dive
@@ -287,44 +287,45 @@ two_col(s,
 s = slide(); divider(s, "4 of 5", "Evaluation & Results", "10 minutes",
                      "Evaluation & Success (metrics tied to KPIs) · hard truths · Retrospective")
 
-# 13 EVALUATION & SUCCESS
-s = slide(); eyebrow(s, "Evaluation & Results · Evaluation & Success"); heading(s, "Success beyond loss — trust SLOs tied to KPIs")
+# 13 HOW I MEASURED SUCCESS
+s = slide(); eyebrow(s, "Evaluation & Results"); heading(s, "How I measured success")
 bullets(s, [
-    "No single label to optimize — it's a **trust** product, so success = trust/safety SLOs that map to the business:",
-], top=1.95, size=14, gap=6)
-table(s, ["KPI", "Target", "Why it's the business metric"], [
-    ["Factual claims with a citation", "100%", "The product promise"],
-    ["Unsupported-claim / broken-citation", "< 2% / < 1%", "Hallucination ceiling; dead links kill trust"],
-    ["Deprecated-source usage", "0%", "Wrong-version answers lose deals"],
-    ["Low-confidence shown without escalation", "0%", "Know what you don't know"],
-], top=2.55, col_w=[4.6, 2.0, 4.8], size=12.5)
-rich(tbox(s, 0.95, 5.75, 11.4, 0.8).paragraphs[0],
-     "**Validated** with a **5 easy / 5 medium / 5 hard** harness → 5/5/5, plus **33 unit tests** that lock the scoring.", 14)
+    "Not “does it sound smart?” — I set quality bars a salesperson can rely on:",
+], top=1.9, size=15, gap=6)
+table(s, ["What I measured", "Target"], [
+    ["Every answer shows its source", "100%"],
+    ["Answers drawn from outdated / retired documents", "0%"],
+    ["A shaky answer shown as if it were solid", "0%  (it asks a human instead)"],
+], top=2.5, col_w=[8.4, 3.0], size=14)
+b = box(s, 0.95, 4.55, 11.4, 1.6, fill=HIB, line=HI)
+tf = tbox(s, 1.25, 4.7, 10.9, 1.35, anchor=MSO_ANCHOR.MIDDLE)
+setrun(tf.paragraphs[0], "How I validated it", 14, HI, bold=True)
+p = tf.add_paragraph(); p.space_before = Pt(5)
+rich(p, "I tested **15 real questions** — 5 easy, 5 medium, 5 hard. It **answered** the ones it could "
+        "prove and **asked a human** for the rest. **15 / 15 correct behavior** — it never bluffed.", 15)
 footer(s, 13)
 
-# 14 HARD TRUTHS
-s = slide(); eyebrow(s, "Evaluation & Results · hard truths"); heading(s, "What broke — and what it taught me")
+# 14 HARD TRUTHS (plain language)
+s = slide(); eyebrow(s, "Evaluation & Results"); heading(s, "What I learned — the hard truths")
 bullets(s, [
-    "**Rerankers aren't calibrated.** The correct passage scored lower than an off-topic one; rerankers order, the LLM judges sufficiency.",
-    "**The newest model deprecated a setting.** I set `temperature=0` for determinism → it errored → my fail-safe escalated all 15. Determinism belongs in my code.",
-    "**A fail-safe became bad UX.** It over-escalated answerable questions; I tuned it to answer when grounded.",
-    "**One downvote shouldn't bury a source** — added a 5-vote floor before reputation can cap (a real sparse-data bug).",
-], top=2.1, size=15, gap=12); footer(s, 14)
+    "**Don't trust the AI's own confidence.** Models sound certain even when wrong — so I have the system *calculate* confidence with rules, not ask the model.",
+    "**Being too careful is also a failure.** Early on it sent answerable questions to a human. I tuned it to answer when it has proof — trust means answering when you can back it up, not just refusing.",
+    "**Small rules need real-world testing.** A single “thumbs-down” could unfairly bury a good document. I only caught that by testing with real questions — and fixed it.",
+], top=2.2, size=16, gap=16); footer(s, 14)
 
 # 15 RETROSPECTIVE
 s = slide(); eyebrow(s, "Evaluation & Results · Retrospective"); heading(s, "If I rebuilt it on today's stack")
 two_col(s,
-    ["**Would change:**",
-     "Agentic retrieval (Corrective / Self-RAG) — critique evidence, re-search before answering.",
-     "A tool-using agent for live lookups before escalating.",
-     "LLM-as-judge as a 2nd **evaluation** signal (never for user-facing confidence).",
+    ["**Would add / change:**",
+     "**SME source certification** — experts verify & certify documents *before* they enter the agent, so every answer is built on accuracy-certified sources.",
+     "**Agentic retrieval** — critique the evidence and re-search before answering; a tool-using agent for live lookups before escalating.",
      "Hosted embeddings + hybrid search + a feedback-tuned reranker; real Confluence/Jira connectors."],
     ["**Would NOT change — the spine:**",
      "Deterministic confidence.",
      "Hard citation gates.",
      "The Facts ↔ Style wall.",
      "_These earned the trust; everything else is an optimization._"],
-    top=2.2, size=14.5); footer(s, 15)
+    top=2.15, size=14); footer(s, 15)
 
 # 16 Q&A
 s = slide()
