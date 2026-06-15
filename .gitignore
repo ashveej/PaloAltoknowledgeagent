@@ -21,3 +21,6 @@ dashboard/data/outbox/
 
 # Local tooling
 .claude/
+
+# Office lock files
+~$*
