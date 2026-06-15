@@ -1,5 +1,5 @@
 # Presenter's Study Guide
-### Understand the whole system well enough to defend it — written for a CRM/Salesforce PM new to AI
+### Understand the whole system well enough to defend it.
 
 > Companion to: `slides.html` (technical deck), `presentation.html` (visual deck),
 > `PRESENTATION.md` (talk script + Q&A bank), `ARCHITECTURE.md` (diagrams).
